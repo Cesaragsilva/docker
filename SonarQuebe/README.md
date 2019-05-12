@@ -1,6 +1,6 @@
 This image is available to using by sqlserver image.
 
-When start the container, this config will await the host: db:1433 stay available (after this config, the db was configured)
+When start the container, this configuration will await the host: db:1433 become available (after this config, the db was configured)
 
 # Config Data SqlServer
   - Create a volume in docker-compose.yml

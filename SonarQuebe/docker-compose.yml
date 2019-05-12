@@ -1,0 +1,41 @@
+version: '3.3'
+volumes: 
+  config:
+networks:
+  sonarnet:
+    driver: bridge
+services:
+  db:
+    image: microsoft/mssql-server-linux
+    container_name: dbtosonar
+    networks:
+      - sonarnet
+    ports:
+      - 1433:1433
+    volumes:
+      - ./config:/usr/src/app
+    working_dir: /usr/src/app
+    command: sh -c ' chmod +x ./script.sh; ./script.sh & /opt/mssql/bin/sqlservr;'
+    environment: 
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=DockerSql!
+      - MSSQL_PID=Developer
+    healthcheck:
+      test: sh -c  "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P DockerSql! -Q 'USE sonar' || exit 1"
+      interval: 20s
+      timeout: 10s
+      retries: 200
+    restart: always
+  sonar:
+    container_name: sonarquebe
+    image: cesaragsilva/sonarqube-await-sqlserver:1.0.1  
+    networks:
+      - sonarnet
+    depends_on: 
+      - db
+    ports:
+      - "9000:9000"
+    environment: 
+      - SONARQUBE_JDBC_PASSWORD=SonarQube!
+      - SONARQUBE_JDBC_USERNAME=sonarqube
+      - SONARQUBE_JDBC_URL=jdbc:sqlserver://db:1433;databaseName=sonar

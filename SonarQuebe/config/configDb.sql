@@ -1,0 +1,13 @@
+USE master
+GO
+IF NOT EXISTS (SELECT name 
+    FROM master.dbo.sysdatabases 
+    WHERE ('[' + name + ']' = N'SONAR' OR name = N'SONAR'))
+BEGIN
+    Print 'BANDO DE DADOS DO SONAR NAO EXISTE...CRIANDO'
+    CREATE DATABASE sonar
+END
+ELSE
+BEGIN
+    Print 'BANCO DE DADOS DO SONAR JA CONFIGURADO'
+END
